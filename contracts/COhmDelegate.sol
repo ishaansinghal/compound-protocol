@@ -9,8 +9,7 @@ import "./CErc20Delegate.sol";
  */
 contract COhmDelegate is CErc20Delegate {
 
-    OlympusStaking olympus;
-    uint deposits;
+    IOlympus olympus;
 
     /**
      * @notice Delegate interface to become the implementation
@@ -27,15 +26,14 @@ contract COhmDelegate is CErc20Delegate {
      * @notice Explicit interface to become the implementation
      * @param olympusStaking_ OlympusStaking address
      */
-    function _becomeImplementation(address olympusStaking_) internal {
+    function _becomeImplementation(address _olympus) internal {
 
-        olympus = OlympusStaking(olympus_);
+        olympus = IOlympus(_olympus);
 
         address ohm = olympus.ohm();
         require(ohm == underlying, "OHM must be the same as underlying");
-        IERC20(ohm).approve(address(this), uint(-1));
+        require(IERC20(ohm).approve(address(this), uint(-1)), "Error approving ERC-20");
 
-        deposits = 0;
 
         // Transfer all OHM in (doTransferIn does this regardless of amount)
         doTransferIn(address(this), 0);
@@ -48,7 +46,7 @@ contract COhmDelegate is CErc20Delegate {
         require(hasAdminRights(), "only the admin may abandon the implementation");
 
         uint bal = IERC20(olympus.sOHM()).balanceOf(address(this));
-        olympus.unstakeOHM(bal);
+        require(olympus.unstakeOHM(bal), "Failed to unstake OHM");
     }
 
     /*** CToken Overrides ***/
@@ -90,8 +88,7 @@ contract COhmDelegate is CErc20Delegate {
         // Perform the ERC-20 transfer in
         require(IERC20(underlying).transferFrom(from, address(this), amount), "unexpected ERC-20 transfer in return");
 
-        olympus.stakeOHM(amount);
-        deposits = add(deposit, amount);
+        require(olympus.stakeOHM(amount), "Failed to stake OHM");
 
         return amount;
     }
@@ -103,11 +100,10 @@ contract COhmDelegate is CErc20Delegate {
      */
     function doTransferOut(address payable to, uint amount) internal {
 
-        olympus.unstakeOHM(amount);
+        require(olympus.unstakeOHM(amount), "Failed to unstake OHM");
 
         require(IERC20(underlying).transfer(to, amount), "unexpected ERC-20 transfer in return");
 
-        deposits = sub(deposits, amount);
 
     }
 
@@ -128,9 +124,9 @@ interface IERC20{
     function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
 }
 
-interface OlympusStaking {
-    function ohm() external returns (address);
-    function sOHM() external returns (address);
+interface IOlympus {
+    function ohm() external view returns (address);
+    function sOHM() external view returns (address);
     function stakeOHM(uint) external returns (bool);
     function unstakeOHM(uint) external returns (bool);
 }

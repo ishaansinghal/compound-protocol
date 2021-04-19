@@ -58,9 +58,6 @@ contract COhmDelegate is CErc20Delegate {
       */
     function accrueInterest() public returns (uint) {
 
-        uint earned = sub(IERC20(olympus.sOHM()).balanceOf(address(this)), deposits);
-
-
         // Accumulate CToken interest
         return super.accrueInterest();
     }
@@ -107,13 +104,6 @@ contract COhmDelegate is CErc20Delegate {
 
     }
 
-    function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) >= x, "add-overflow");
-    }
-
-    function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) >= 0, "sub-overflow");
-    }
 
 }
 

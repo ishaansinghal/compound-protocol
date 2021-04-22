@@ -24,11 +24,11 @@ contract COhmDelegate is CErc20Delegate {
 
     /**
      * @notice Explicit interface to become the implementation
-     * @param olympusStaking_ OlympusStaking address
+     * @param  olympus_ OlympusStaking address
      */
-    function _becomeImplementation(address _olympus) internal {
+    function _becomeImplementation(address olympus_) internal {
 
-        olympus = IOlympus(_olympus);
+        olympus = IOlympus(olympus_);
 
         address ohm = olympus.ohm();
         require(ohm == underlying, "OHM must be the same as underlying");

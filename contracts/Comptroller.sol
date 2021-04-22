@@ -165,7 +165,7 @@ contract Comptroller is ComptrollerV2Storage, ComptrollerInterface, ComptrollerE
         //  and not whenever we want to check if an account is in a particular market
         marketToJoin.accountMembership[borrower] = true;
         accountAssets[borrower].push(cToken);
-        
+
         // Add to allBorrowers
         if (!borrowers[borrower]) {
             allBorrowers.push(borrower);
@@ -996,7 +996,7 @@ contract Comptroller is ComptrollerV2Storage, ComptrollerInterface, ComptrollerE
         enforceWhitelist = enforce;
 
         // Emit WhitelistEnforcementChanged(bool enforce);
-        emit WhitelistEnforcementChanged(enforce);
+        // emit WhitelistEnforcementChanged(enforce);
 
         return uint(Error.NO_ERROR);
     }
@@ -1259,7 +1259,7 @@ contract Comptroller is ComptrollerV2Storage, ComptrollerInterface, ComptrollerE
 
         // Unlist market
         delete markets[address(cToken)];
-        
+
         /* Delete cToken from allMarkets */
         // load into memory for faster iteration
         CToken[] memory _allMarkets = allMarkets;

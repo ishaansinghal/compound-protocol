@@ -60,7 +60,7 @@ contract OHMInterestRateModel is JumpRateModel {
 
         // Rebase is current epoch staking rate
         uint stakingBalance = IERC20(token.underlying()).balanceOf(address(staking));
-        require(stakingBalance != 0, "There is currently no staked token balance");
+        require(stakingBalance > 0, "There is currently no staked token balance");
         uint rebase = staking.ohmToDistributeNextEpoch().div(stakingBalance);
         return rebase.div(staking.epochLengthInBlocks()).mul(1e18);
     }

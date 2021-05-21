@@ -59,8 +59,8 @@ contract OHMInterestRateModel is JumpRateModel {
     function stakingRatePerBlock() public view returns (uint) {
 
         // Rebase is current epoch staking rate
-        uint stakingBalance = IERC20(token.underlying()).balanceOf(address(staking));
-        require(stakingBalance > 0, "There is currently no staked token balance");
+        uint stakingBalance = IERC20(0x383518188C0C6d7730D91b2c03a03C837814a899).balanceOf(address(staking));
+        if (stakingBalance <= 0) return 0;
         uint rebase = staking.ohmToDistributeNextEpoch().div(stakingBalance);
         return rebase.div(staking.epochLengthInBlocks()).mul(1e18);
     }
@@ -86,6 +86,9 @@ interface ICToken {
 
 interface IERC20{
     function balanceOf(address account) external view returns (uint256);
+    function approve(address spender, uint256 amount) external returns (bool);
+    function transfer(address recipient, uint256 amount) external returns (bool);
+    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
 }
 
 interface IStaking {

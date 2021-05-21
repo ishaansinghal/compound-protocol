@@ -1,6 +1,7 @@
 pragma solidity ^0.5.16;
 
 import "./CErc20Delegate.sol";
+import "./OHMInterestRateModel.sol";
 
 /**
  * @title Compound's CDai Contract
@@ -59,7 +60,9 @@ contract COhmDelegate is CErc20Delegate {
     function accrueInterest() public returns (uint) {
 
         // Accumulate CToken interest
-        return super.accrueInterest();
+        uint ret = super.accrueInterest();
+        OHMInterestRateModel(address(interestRateModel)).poke();
+        return ret;
     }
 
     /*** Safe Token ***/
@@ -105,13 +108,6 @@ contract COhmDelegate is CErc20Delegate {
     }
 
 
-}
-
-interface IERC20{
-    function balanceOf(address account) external view returns (uint256);
-    function approve(address spender, uint256 amount) external returns (bool);
-    function transfer(address recipient, uint256 amount) external returns (bool);
-    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
 }
 
 interface IOlympus {
